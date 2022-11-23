@@ -1,45 +1,29 @@
 package com.kodilla.stream;
 
-import com.kodilla.stream.beautifier.PoemBeautifier;
-import com.kodilla.stream.lambda.Calculator;
-import com.kodilla.stream.lambda.ExpressionExecutor;
-import com.kodilla.stream.lambda.MathExpression;
+import com.kodilla.stream.book.Book;
+import com.kodilla.stream.book.BookDirectory;
+import com.kodilla.stream.forumuser.Forum;
+import com.kodilla.stream.forumuser.ForumUser;
 
-import java.util.Locale;
+import java.time.Duration;
+import java.time.LocalDate;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public class StreamMain {
 
     public static void main(String[] args) {
-        ExpressionExecutor expressionExecutor = new ExpressionExecutor();
+        Forum forum = new Forum();
+        Map<Integer, ForumUser> par = forum.getUserList().stream()
+                .filter(forumUser -> forumUser.getSex() == 'M')
+                .filter(forumUser -> LocalDate.now().getYear() - forumUser.getBirthDate().getYear() > 20)
+                .filter(forumUser -> forumUser.getNumberOfPosts() > 1)
+                .collect(Collectors.toMap(ForumUser::getId, Function.identity()));
 
-        PoemBeautifier poemBeautifier = new PoemBeautifier();
-
-        poemBeautifier.beautify("Ala ma kota", poem -> poem.toUpperCase(Locale.ROOT));
-        poemBeautifier.beautify("Ala ma psa" , String::toLowerCase);
-        poemBeautifier.beautify("Kotek na płocie" , poem -> poem.replace("Kotek", "Pies"));
-        poemBeautifier.beautify("Auta klasy" , poem -> poem + " ABC");
-        poemBeautifier.beautify("Ala ma psa " , poem -> poem.repeat(5));
-        poemBeautifier.beautify("Ala ma psa" , poem -> new StringBuilder(poem).reverse().toString());
+        System.out.println(par);
 
 
-
-        // SUM
-        expressionExecutor.executeExpression(10, 5, new MathExpression() {
-            @Override
-            public double calculateExpression(double a, double b) {
-                return a + b;
-            }
-        });
-        expressionExecutor.executeExpression(10, 5, (a, b) -> a + b);
-        expressionExecutor.executeExpression(10, 5, Calculator::sum);
-
-        // SUB
-        expressionExecutor.executeExpression(10, 5, (a, b) -> a - b);
-
-        // MUL
-        expressionExecutor.executeExpression(10, 5, (a, b) -> a * b);
-
-        // DIV
-        expressionExecutor.executeExpression(10, 5, (a, b) -> a / b);
     }
 }
